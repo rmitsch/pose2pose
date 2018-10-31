@@ -47,7 +47,7 @@ def run():
 
         gray = cv2.cvtColor(res-rgb, cv2.COLOR_RGB2GRAY)
         ret, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)
-        cv2.imshow("OpenPose result", binary)
+        #cv2.imshow("OpenPose result", binary)
         count += 1
         print(count)
         #if count < 155 or (count > 855 and count < 1255) or (count > 1745 and count < 1775) or (count > 2225 and count < 2265) or (count > 2535 and count < 2915):
@@ -57,12 +57,12 @@ def run():
         cv2.imwrite("original/{}.png".format(count), rgb)
         cv2.imwrite("landmarks/{}.png".format(count), binary)
 
-        key = cv2.waitKey(delay[paused])
-        if key & 255 == ord('p'):
-            paused = not paused
-
-        if key & 255 == ord('q'):
-            break
+        #key = cv2.waitKey(delay[paused])
+        #if key & 255 == ord('p'):
+        #    paused = not paused
+        
+        #if key & 255 == ord('q'):
+        #    break
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
