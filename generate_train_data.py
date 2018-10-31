@@ -19,40 +19,33 @@ def run():
     delay = {True: 0, False: 1}
 
     count = 0
-    while True:
-        try:
-            ret, frame = cap.read()
-            rgb = frame
-        except Exception as e:
-            print("Failed to grab", e)
-            break
-
-        t = time.time()
-        op.detectPose(rgb)
-        op.detectFace(rgb)
-        op.detectHands(rgb)
-        t = time.time() - t
-
-        res = op.render(rgb)
-        persons = op.getKeypoints(op.KeypointType.POSE)[0]
-
-        if persons is None:
-            print("No Person")
-            continue
-
-        if persons is not None and len(persons) > 1:
-            print("Person > 1 ", persons[0].shape)
-            continue
-
-        gray = cv2.cvtColor(res-rgb, cv2.COLOR_RGB2GRAY)
-        ret, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)
+    try:
+        ret, rgb = cap.read()
         
-        count += 1
-        print(count)
-        
-        cv2.imwrite("original/{}.png".format(count), rgb)
-        cv2.imwrite("landmarks/{}.png".format(count), binary)
+        while ret:
+            t = time.time()
+            op.detectPose(rgb)
+            op.detectFace(rgb)
+            op.detectHands(rgb)
+            t = time.time() - t
 
+            res = op.render(rgb)
+            persons = op.getKeypoints(op.KeypointType.POSE)[0]
+
+            if persons is not None and len(persons) == 1:
+                gray = cv2.cvtColor(res-rgb, cv2.COLOR_RGB2GRAY)
+                ret_threshold, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)
+
+                count += 1
+                print(count)
+
+                cv2.imwrite("original/{}.png".format(count), rgb)
+                cv2.imwrite("landmarks/{}.png".format(count), binary)
+            
+            ret, rgb = cap.read()
+            
+    except Exception as e:
+        print(e)
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
