@@ -50,49 +50,49 @@ def main():
     cap = cv2.VideoCapture(args.video_source)
     
     image_index = 0
-    while True:
-        try:
-            ret, frame = cap.read()
-        except Exception as e:
-            print("Failed to grab", e)
-            break
+    try:
+        ret, frame = cap.read()
 
-        if frame is None:
-            continue
-        rgb_resize = cv2.resize(frame, (640, 480))
+        while ret:
+            rgb_resize = cv2.resize(frame, (640, 480))
 
-        op.detectPose(rgb_resize)
-        op.detectFace(rgb_resize)
-        op.detectHands(rgb_resize)
+            op.detectPose(rgb_resize)
+            op.detectFace(rgb_resize)
+            op.detectHands(rgb_resize)
 
-        res = op.render(rgb_resize)
-        persons = op.getKeypoints(op.KeypointType.POSE)[0]
+            res = op.render(rgb_resize)
+            persons = op.getKeypoints(op.KeypointType.POSE)[0]
 
-        if persons is not None and len(persons) > 1:
-            print("First Person: ", persons[0].shape)
-            continue
+            if persons is not None and len(persons) > 1:
+                print("First Person: ", persons[0].shape)
+                continue
 
-        gray = cv2.cvtColor(res-rgb_resize, cv2.COLOR_RGB2GRAY)
-        ret, resize_gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)
-        resize_binary = cv2.cvtColor(resize_gray, cv2.COLOR_GRAY2RGB)
+            gray = cv2.cvtColor(res-rgb_resize, cv2.COLOR_RGB2GRAY)
+            ret_thresh, resize_gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)
+            resize_binary = cv2.cvtColor(resize_gray, cv2.COLOR_GRAY2RGB)
 
-        # generate prediction
-        combined_image = np.concatenate([resize(resize_binary), resize(rgb_resize)], axis=1)
-        image_rgb = cv2.cvtColor(combined_image, cv2.COLOR_BGR2RGB)  # OpenCV uses BGR instead of RGB
-        generated_image = sess.run(output_tensor, feed_dict={image_tensor: image_rgb})
-        image_bgr = cv2.cvtColor(np.squeeze(generated_image), cv2.COLOR_RGB2BGR)
-        image_normal = np.concatenate([resize(rgb_resize), image_bgr], axis=1)
-        image_pose = np.concatenate([resize(resize_binary), image_bgr], axis=1)
-        image_all = np.concatenate([resize(rgb_resize), resize(resize_binary), image_bgr], axis=1)
+            # generate prediction
+            combined_image = np.concatenate([resize(resize_binary), resize(rgb_resize)], axis=1)
+            image_rgb = cv2.cvtColor(combined_image, cv2.COLOR_BGR2RGB)  # OpenCV uses BGR instead of RGB
+            generated_image = sess.run(output_tensor, feed_dict={image_tensor: image_rgb})
+            image_bgr = cv2.cvtColor(np.squeeze(generated_image), cv2.COLOR_RGB2BGR)
+            image_normal = np.concatenate([resize(rgb_resize), image_bgr], axis=1)
+            image_pose = np.concatenate([resize(resize_binary), image_bgr], axis=1)
+            image_all = np.concatenate([resize(rgb_resize), resize(resize_binary), image_bgr], axis=1)
 
-        if args.display == 0:
-            cv2.imwrite('img_' + str(image_index) + ".jpg", image_normal)
-        elif args.display == 1:
-            cv2.imwrite('img_' + str(image_index) + ".jpg", image_pose)
-        else:
-            cv2.imwrite('img_' + str(image_index) + ".jpg", image_all)
+            if args.display == 0:
+                cv2.imwrite('img_' + str(image_index) + ".jpg", image_normal)
+            elif args.display == 1:
+                cv2.imwrite('img_' + str(image_index) + ".jpg", image_pose)
+            else:
+                cv2.imwrite('img_' + str(image_index) + ".jpg", image_all)
             
-        image_index += 1
+            print(image_index)
+            image_index += 1
+            ret, frame = cap.read()
+        
+    except Exception as e:
+        print(e)
 
     sess.close()
     cap.release()
