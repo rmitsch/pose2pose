@@ -48,7 +48,8 @@ def main():
 
     # OpenCV
     cap = cv2.VideoCapture(args.video_source)
-
+    
+    image_index = 0
     while True:
         try:
             ret, frame = cap.read()
@@ -84,15 +85,8 @@ def main():
         image_pose = np.concatenate([resize(resize_binary), image_bgr], axis=1)
         image_all = np.concatenate([resize(rgb_resize), resize(resize_binary), image_bgr], axis=1)
 
-        if args.display == 0:
-            cv2.imshow('pose2pose', image_normal)
-        elif args.display == 1:
-            cv2.imshow("pose2pose", image_pose)
-        else:
-            cv2.imshow('pose2pose', image_all)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        cv2.imwrite('img_' + str(image_index) + ".jpg", image_all)
+        image_index += 1
 
     sess.close()
     cap.release()
