@@ -101,8 +101,8 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-src', '--source', dest='video_source', type=int,
-                        default=0, help='Device index of the camera.')
+    parser.add_argument('-src', '--source', dest='video_source', type=str,
+                        default=0, help='Source video.')
     parser.add_argument('--output-type', dest='display', type=int, default=2, choices=[0, 1, 2],
                         help='0 saves the normal input; 1 saves the pose; 2 saves the normal input and pose')
     parser.add_argument('--tf-model', dest='frozen_model_file', type=str, default='pose2pose-reduced-model/frozen_model.pb',help='Frozen TensorFlow model file.')
