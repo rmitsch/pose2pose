@@ -85,7 +85,13 @@ def main():
         image_pose = np.concatenate([resize(resize_binary), image_bgr], axis=1)
         image_all = np.concatenate([resize(rgb_resize), resize(resize_binary), image_bgr], axis=1)
 
-        cv2.imwrite('img_' + str(image_index) + ".jpg", image_all)
+        if args.display == 0:
+            cv2.imwrite('img_' + str(image_index) + ".jpg", image_normal)
+        elif args.display == 1:
+            cv2.imwrite('img_' + str(image_index) + ".jpg", image_pose)
+        else:
+            cv2.imwrite('img_' + str(image_index) + ".jpg", image_all)
+            
         image_index += 1
 
     sess.close()
@@ -97,8 +103,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-src', '--source', dest='video_source', type=int,
                         default=0, help='Device index of the camera.')
-    parser.add_argument('--show', dest='display', type=int, default=2, choices=[0, 1, 2],
-                        help='0 shows the normal input; 1 shows the pose; 2 shows the normal input and pose')
+    parser.add_argument('--output-type', dest='display', type=int, default=2, choices=[0, 1, 2],
+                        help='0 saves the normal input; 1 saves the pose; 2 saves the normal input and pose')
     parser.add_argument('--tf-model', dest='frozen_model_file', type=str, default='pose2pose-reduced-model/frozen_model.pb',help='Frozen TensorFlow model file.')
     args = parser.parse_args()
     main()
