@@ -78,11 +78,11 @@ def main():
                 image_all = np.concatenate([resize(rgb_resize), resize(resize_binary), image_bgr], axis=1)
 
                 if args.display == 0:
-                    cv2.imwrite('img_' + str(image_index) + ".jpg", image_normal)
+                    cv2.imwrite(args.output_dir + '/img_' + str(image_index) + ".jpg", image_normal)
                 elif args.display == 1:
-                    cv2.imwrite('img_' + str(image_index) + ".jpg", image_pose)
+                    cv2.imwrite(args.output_dir + '/img_' + str(image_index) + ".jpg", image_pose)
                 else:
-                    cv2.imwrite('img_' + str(image_index) + ".jpg", image_all)
+                    cv2.imwrite(args.output_dir + '/img_' + str(image_index) + ".jpg", image_all)
 
                 print(image_index)
                 image_index += 1
@@ -101,6 +101,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-src', '--source', dest='video_source', type=str,
                         default=0, help='Source video.')
+    parser.add_argument('-dest', '--destination', dest='output_dir', type=str,
+                        default=0, help='Output directory for generated images.')
     parser.add_argument('--output-type', dest='display', type=int, default=2, choices=[0, 1, 2],
                         help='0 saves the normal input; 1 saves the pose; 2 saves the normal input and pose')
     parser.add_argument('--tf-model', dest='frozen_model_file', type=str, default='pose2pose-reduced-model/frozen_model.pb',help='Frozen TensorFlow model file.')
